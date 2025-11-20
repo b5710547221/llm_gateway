@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 // Server component with SSR
 export default async function UsersPage() {
   const users = await prisma.user.findMany({
