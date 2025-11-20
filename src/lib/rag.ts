@@ -121,7 +121,10 @@ export class RAGSystem {
     const queryEmbedding = this.generateEmbedding(query)
     const results: SearchResult[] = []
 
-    for (const [id, doc] of this.vectorDB.entries()) {
+    // Convert to Array to avoid MapIterator issues
+    const documents = Array.from(this.vectorDB.values())
+    
+    for (const doc of documents) {
       const docEmbedding = doc.embedding || this.generateEmbedding(doc.content)
       const similarity = this.cosineSimilarity(queryEmbedding, docEmbedding)
 
@@ -130,7 +133,7 @@ export class RAGSystem {
         const queryWords = query.toLowerCase().split(/\s+/)
         const contentWords = doc.content.toLowerCase().split(/\s+/)
         const matchCount = queryWords.filter(word => 
-          contentWords.some(cWord => cWord.includes(word))
+          contentWords.some((cWord: string) => cWord.includes(word))
         ).length
         const relevanceScore = (similarity * 0.7) + (matchCount / queryWords.length * 0.3)
 
@@ -143,14 +146,13 @@ export class RAGSystem {
     }
 
     // Sort by relevance score and return top K
-    return results
-      .sort((a, b) => b.relevanceScore - a.relevanceScore)
-      .slice(0, topK)
+    const sortedResults = results.slice().sort((a, b) => b.relevanceScore - a.relevanceScore)
+    return sortedResults.slice(0, topK)
   }
 
   // TOR 1.5.5 - Add document to vector DB
   async addDocument(doc: Omit<Document, 'id' | 'embedding'>): Promise<Document> {
-    const id = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const id = `doc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
     const embedding = this.generateEmbedding(doc.content)
     
     const newDoc: Document = {

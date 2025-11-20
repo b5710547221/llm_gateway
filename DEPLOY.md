@@ -1,5 +1,25 @@
 # 🚀 Quick Vercel Deployment Steps
 
+## ⚠️ Important: Database Configuration
+
+**Before deployment, update Prisma schema for PostgreSQL:**
+
+1. Open `prisma/schema.prisma`
+2. Change datasource from:
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+```
+To:
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
 ## 1. Set Up Database
 
 **Use Vercel Postgres (Easiest)**
