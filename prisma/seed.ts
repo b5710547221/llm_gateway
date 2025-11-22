@@ -38,6 +38,45 @@ async function main() {
 
   console.log('Created test user:', user.email)
 
+  // Create sample posts
+  const post1 = await prisma.post.upsert({
+    where: { id: 'sample-post-1' },
+    update: {},
+    create: {
+      id: 'sample-post-1',
+      title: 'Welcome to AI-Sec Gateway',
+      content: 'This is a secure AI gateway platform that implements NCSC security standards for GenAI applications. It includes guardrails, routing, RAG, and comprehensive audit logging.',
+      published: true,
+      authorId: admin.id,
+    },
+  })
+
+  const post2 = await prisma.post.upsert({
+    where: { id: 'sample-post-2' },
+    update: {},
+    create: {
+      id: 'sample-post-2',
+      title: 'Security Features',
+      content: 'Our gateway includes PII detection, SQL injection prevention, prompt injection detection, and multi-provider load balancing for enhanced security and reliability.',
+      published: true,
+      authorId: admin.id,
+    },
+  })
+
+  const post3 = await prisma.post.upsert({
+    where: { id: 'sample-post-3' },
+    update: {},
+    create: {
+      id: 'sample-post-3',
+      title: 'Getting Started',
+      content: 'Login with your credentials, select an LLM provider from the gateway interface, and start making secure AI queries with built-in threat detection and audit logging.',
+      published: true,
+      authorId: user.id,
+    },
+  })
+
+  console.log('Created sample posts:', post1.id, post2.id, post3.id)
+
   console.log('✅ Database seeded successfully!')
 }
 
