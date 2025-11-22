@@ -9,7 +9,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - ai-sec-app
+      - app
     restart: always
   # PostgreSQL Database
   postgres:
