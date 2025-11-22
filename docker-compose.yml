@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   nginx:
@@ -9,7 +9,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - nextjs
+      - ai-sec-app
     restart: always
   # PostgreSQL Database
   postgres:
