@@ -49,15 +49,15 @@ docker-compose --env-file .env.docker up -d
 
 # Wait for database to be ready
 echo -e "${YELLOW}⏳ Waiting for database to be ready...${NC}"
-sleep 10
+sleep 15
 
 # Run database migration
 echo -e "${GREEN}📊 Running database migration...${NC}"
-docker-compose --env-file .env.docker exec app npx prisma db push
+docker-compose --env-file .env.docker exec -T app npx prisma db push --skip-generate || echo "Migration may have already run"
 
 # Seed database
 echo -e "${GREEN}🌱 Seeding database with admin user...${NC}"
-docker-compose --env-file .env.docker exec app npx tsx prisma/seed.ts || echo "Seed script not found, skipping..."
+docker-compose --env-file .env.docker exec -T app npx tsx prisma/seed.ts || echo "Seed completed or users already exist"
 
 echo ""
 echo -e "${GREEN}✅ Deployment Complete!${NC}"

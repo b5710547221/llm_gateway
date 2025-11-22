@@ -13,6 +13,9 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
+# Ensure public directory exists
+RUN mkdir -p public
+
 # Generate Prisma Client
 RUN npx prisma generate
 
@@ -27,17 +30,25 @@ WORKDIR /app
 # Set environment to production
 ENV NODE_ENV=production
 
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy necessary files from builder
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Create necessary directories
+RUN mkdir -p .next public
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Set correct permissions
+RUN chown -R nextjs:nodejs /app
 
 # Switch to non-root user
 USER nextjs
@@ -49,4 +60,4 @@ ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
 # Start the application
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

@@ -3,13 +3,15 @@
 services:
   nginx:
     image: nginx:latest
-    container_name: nextjs_nginx
+    container_name: ai-sec-nginx
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
     depends_on:
       - app
+    networks:
+      - ai-sec-network
     restart: always
   # PostgreSQL Database
   postgres:
